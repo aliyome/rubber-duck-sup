@@ -10,9 +10,8 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+import { app } from "./hono";
 
 export default {
-	async fetch(_request, _env, _ctx): Promise<Response> {
-		return new Response("Hello World!");
-	},
+	fetch: app.fetch,
 } satisfies ExportedHandler<Env>;
