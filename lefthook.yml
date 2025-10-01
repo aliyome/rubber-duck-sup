@@ -1,0 +1,19 @@
+pre-commit:
+  commands:
+    lint:
+      glob: "*.{ts,js,json}"
+      run: npx biome check --unsafe --write {staged_files}
+      stage_fixed: true
+      fail_text: "Linting failed. Please fix lint errors before committing."
+    
+    typecheck:
+      glob: "*.{ts,js}"
+      run: npx tsgo --noEmit
+      fail_text: "Type checking failed. Please fix type errors before committing."
+
+    test:
+      glob: "*.{ts,js}"
+      env:
+        CI: "true"
+      run: npm run test
+      fail_text: "Tests failed. Please fix failing tests before committing."

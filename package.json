@@ -7,10 +7,15 @@
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
-		"cf-typegen": "wrangler types"
+		"cf-typegen": "wrangler types",
+		"lint": "biome check --unsafe --write && tsc --noEmit",
+		"prepare": "lefthook install"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^2.2.4",
 		"@cloudflare/vitest-pool-workers": "^0.8.19",
+		"@typescript/native-preview": "^7.0.0-dev.20250926.1",
+		"lefthook": "^1.13.4",
 		"typescript": "^5.5.2",
 		"vitest": "~3.2.0",
 		"wrangler": "^4.40.3"
