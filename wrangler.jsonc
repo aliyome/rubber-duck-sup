@@ -4,12 +4,19 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "noisy-base-0ac6",
+	"name": "rubber-duck-sup",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-10-01",
 	"observability": {
 		"enabled": true
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "rubber-duck-sup",
+			"database_id": "ab9275d4-8dc1-4407-82af-1eebdec1176d"
+		}
+	]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
