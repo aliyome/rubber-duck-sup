@@ -17,7 +17,8 @@
 - [x] `wrangler.jsonc`ファイルに必要な設定を記述し、取得したトークン類を`wrangler secret put`コマンドで Cloudflare Workers のシークレットとして登録する
 - [x] 開発用の Discord サーバーを作成し、開発中の bot をそのサーバーに招待する
 - [x] Vitest をプロジェクトにセットアップ
-- [ ] Discord からの Webhook リクエストと Cloudflare Workers AI の API レスポンスを模倣するモックデータを作成する
+- [x] Discord からの Webhook リクエストと Cloudflare Workers AI の API レスポンスを模倣するモックデータを作成する
+  - [test/fixtures/index.ts](../../test/fixtures/index.ts)
 - [ ] Discord からの Webhook リクエストの署名を検証するロジックの単体テストを、正常系（有効な署名）と異常系（無効な署名）の観点で実装する
 - [ ] AI ツールに「wrangler と TypeScript を使い、Discord からの ping-pong リクエストに応答する Cloudflare Workers の最小限のコード例を生成してください」と依頼し、bot の疎通確認用エンドポイントを実装する
 - [ ] AI ツールに「Cloudflare Workers の Cron Triggers を使い、20 分ごとに処理を実行するための wrangler.toml の設定と、対応する TypeScript のコードを生成してください」と依頼し、定期実行の雛形を作成する

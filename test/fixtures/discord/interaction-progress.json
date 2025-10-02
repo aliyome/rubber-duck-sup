@@ -1,0 +1,42 @@
+{
+	"id": "123456789012345678",
+	"application_id": "987654321098765432",
+	"type": 2,
+	"data": {
+		"id": "111222333444555666",
+		"name": "progress",
+		"type": 1,
+		"options": [
+			{
+				"name": "status",
+				"type": 3,
+				"value": "Finished signing verification yesterday. Starting on the AI integration today."
+			}
+		]
+	},
+	"guild_id": "135791357913579135",
+	"channel_id": "246802468024680246",
+	"member": {
+		"user": {
+			"id": "555666777888999000",
+			"username": "aliyome",
+			"global_name": "Ali Yome",
+			"avatar": null,
+			"discriminator": "0"
+		},
+		"roles": ["112233445566778899"],
+		"joined_at": "2025-09-15T12:00:00.000000+00:00",
+		"premium_since": null,
+		"pending": false,
+		"nick": null,
+		"communication_disabled_until": null,
+		"mute": false,
+		"deaf": false,
+		"flags": 0
+	},
+	"token": "A_SAMPLE_INTERACTION_TOKEN",
+	"version": 1,
+	"locale": "en-US",
+	"guild_locale": "en-US",
+	"app_permissions": "17179869183"
+}

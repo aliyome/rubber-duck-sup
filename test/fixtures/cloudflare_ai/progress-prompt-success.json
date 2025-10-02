@@ -1,0 +1,14 @@
+{
+	"response": "Yesterday you wrapped up the signature verification. How far along are you with the AI integration now?",
+	"model": "@cf/meta/llama-3.1-8b-instruct",
+	"usage": {
+		"prompt_tokens": 420,
+		"completion_tokens": 36,
+		"total_tokens": 456
+	},
+	"meta": {
+		"temperature": 0.7,
+		"top_p": 0.9,
+		"created_at": "2025-10-02T04:00:00.000Z"
+	}
+}
