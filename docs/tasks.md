@@ -1,26 +1,26 @@
 # Tasks
 
 - [x] AI ツールに対し「Cloudflare Workers 上で動作する Discord bot の基本的な仕組みを、メッセージの送受信方法と定期実行のトリガー方法を含めて、サンプルコード付きで説明してください」と依頼し、プロジェクト用の技術メモを作成する
-  - [discord_bot_on_cloudflare_workers.md](discord_bot_on_cloudflare_workers.md)
+  - [discord_bot_on_cloudflare_workers.md](research/discord_bot_on_cloudflare_workers.md)
 - [-] AI ツールに対し「Cloudflare Workers 上で利用可能な Discord bot 開発用フレームワークまたはライブラリを 3 つ挙げ、それぞれの長所・短所を比較した上で、今回の要件に最適なものを提案してください」と依頼し、使用するフレームワークを選定する
   - 今回は Hono を採用する
 - [x] Cloudflare Workers AI の公式ドキュメントを確認し、テキスト生成モデルと要約モデルの API 仕様（リクエスト形式、レスポンス形式、利用可能なモデル）を調査し、結果をまとめる
-  - [cloudflare_ai.md](cloudflare_ai.md)
+  - [cloudflare_ai.md](research/cloudflare_ai.md)
 - [x] Cloudflare Workers で状態を永続化する方法として、Cloudflare KV と D1 の特性を調査し、会話コンテキストの保存に適した技術を選定する
-  - [kv_or_d1.md](kv_or_d1.md)
+  - [kv_or_d1.md](research/kv_or_d1.md)
 - [x] 選定した技術スタック（Discord bot フレームワーク、DB）に基づき、プロジェクト全体の処理フローとデータモデル（ユーザー ID、会話履歴、タイムスタンプ等）を設計し、シーケンス図を含む簡単な図や文章で書き出す
-  - [processing_flow_and_data_model.md](processing_flow_and_data_model.md)
+  - [processing_flow_and_data_model.md](research/processing_flow_and_data_model.md)
 - [x] テストフレームワークとして Vitest を選定し、Discord API と Cloudflare Workers AI の応答をモック化するテスト方針を決定する
-  - [test_plan_with_vitest.md](test_plan_with_vitest.md)
+  - [test_plan_with_vitest.md](research/test_plan_with_vitest.md)
 - [x] Cloudflare のダッシュボードから`wrangler` CLI をインストールし、`wrangler init`コマンドで新規プロジェクトを作成する
 - [x] Discord Developer Portal で新規アプリケーションを作成し、Bot のトークン、Application ID、公開鍵を取得する
 - [x] `wrangler.jsonc`ファイルに必要な設定を記述し、取得したトークン類を`wrangler secret put`コマンドで Cloudflare Workers のシークレットとして登録する
 - [x] 開発用の Discord サーバーを作成し、開発中の bot をそのサーバーに招待する
 - [x] Vitest をプロジェクトにセットアップ
 - [x] Discord からの Webhook リクエストと Cloudflare Workers AI の API レスポンスを模倣するモックデータを作成する
-  - [test/fixtures/index.ts](../../test/fixtures/index.ts)
+  - [test/fixtures/index.ts](../test/fixtures/index.ts)
 - [x] Discord からの Webhook リクエストの署名を検証するロジックの単体テストを、正常系（有効な署名）と異常系（無効な署名）の観点で実装する
-  - [test/verify-discord-signature.spec.ts](../../test/verify-discord-signature.spec.ts)
+  - [test/verify-discord-signature.spec.ts](../test/verify-discord-signature.spec.ts)
 - [x] AI ツールに「wrangler と TypeScript を使い、Discord からの ping-pong リクエストに応答する Cloudflare Workers の最小限のコード例を生成してください」と依頼し、bot の疎通確認用エンドポイントを実装する
   - `src/hono.ts` に PING→PONG 応答処理を追加し、Discord Dashboard で疎通確認済み
 - [ ] AI ツールに「Cloudflare Workers の Cron Triggers を使い、20 分ごとに処理を実行するための wrangler.toml の設定と、対応する TypeScript のコードを生成してください」と依頼し、定期実行の雛形を作成する
