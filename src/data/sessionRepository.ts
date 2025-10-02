@@ -2,6 +2,7 @@ import type { PromptDueSession, SessionRow } from "./models";
 
 const SESSION_COLUMNS = [
 	"id",
+	"discord_user_id",
 	"discord_channel_id",
 	"discord_thread_id",
 	"status",
@@ -16,6 +17,7 @@ const SESSION_COLUMNS = [
 function mapSession(row: Record<string, unknown>): SessionRow {
 	return {
 		id: String(row.id),
+		discord_user_id: String(row.discord_user_id),
 		discord_channel_id: String(row.discord_channel_id),
 		discord_thread_id: row.discord_thread_id === null ? null : String(row.discord_thread_id),
 		status: row.status as SessionRow["status"],
@@ -33,6 +35,17 @@ export async function getActiveSession(db: D1Database): Promise<SessionRow | nul
 		`SELECT ${SESSION_COLUMNS} FROM sessions WHERE status = ? ORDER BY started_at DESC LIMIT 1`,
 	);
 	const result = await statement.bind("active").first<Record<string, unknown>>();
+	return result ? mapSession(result) : null;
+}
+
+export async function getActiveSessionByDiscordUserId(
+	db: D1Database,
+	discordUserId: string,
+): Promise<SessionRow | null> {
+	const statement = db.prepare(
+		`SELECT ${SESSION_COLUMNS} FROM sessions WHERE status = ? AND discord_user_id = ? ORDER BY started_at DESC LIMIT 1`,
+	);
+	const result = await statement.bind("active", discordUserId).first<Record<string, unknown>>();
 	return result ? mapSession(result) : null;
 }
 

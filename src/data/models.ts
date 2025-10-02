@@ -1,5 +1,6 @@
 export interface SessionRow {
 	id: string;
+	discord_user_id: string;
 	discord_channel_id: string;
 	discord_thread_id: string | null;
 	status: "active" | "stopped" | "paused";

@@ -27,8 +27,10 @@
   - `wrangler.jsonc` に毎分の `crons` を追加 (`triggers.crons = ["* * * * *"]`)
   - `src/index.ts` に `scheduled` ハンドラを実装し、`src/jobs/promptScheduler.ts` のエントリポイントへ委譲
   - D1 で扱うセッション／メッセージ行の型とリポジトリ雛形を `src/data/` 配下に追加
-- [ ] ユーザー ID をキーとして、会話の履歴を Cloudflare KV（または D1）に保存する関数を実装する
-- [ ] ユーザー ID をキーとして、保存された会話の履歴を Cloudflare KV（または D1）から取得する関数を実装する
+- [x] ユーザー ID をキーとして、会話の履歴を Cloudflare KV（または D1）に保存する関数を実装する
+  - `src/data/conversationRepository.ts` に `saveConversationMessage` を追加
+- [x] ユーザー ID をキーとして、保存された会話の履歴を Cloudflare KV（または D1）から取得する関数を実装する
+  - `src/data/conversationRepository.ts` に `getConversationHistoryForUser` を追加
 - [ ] AI ツールに「以前の会話履歴のテキストをコンテキストとして渡し、『{前回の作業内容}という状態でしたが、現在の進捗はどうですか？』のような自然な問いかけ文を生成する Cloudflare Workers AI への API リクエストのコード例を生成してください」と依頼し、進捗確認メッセージを動的に生成する機能を実装する
 - [ ] Cron Triggers によって起動され、対象ユーザーの会話履歴を取得し、動的に生成した進捗確認メッセージを Discord に送信する機能を実装する
 - [ ] ユーザーからの進捗報告メッセージを受け取り、その内容を会話履歴として保存する機能を実装する

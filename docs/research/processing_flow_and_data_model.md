@@ -43,6 +43,7 @@
 | column                | type             | description                                                                    |
 | --------------------- | ---------------- | ------------------------------------------------------------------------------ |
 | `id`                  | TEXT PRIMARY KEY | ULID/UUID。`/start` ごとに新規発行。                                           |
+| `discord_user_id`     | TEXT             | セッションを所有する Discord ユーザーの ID。                                   |
 | `discord_channel_id`  | TEXT             | セッション用スレッドを作成する元チャンネル（ラバーダック専用チャンネルなど）。 |
 | `discord_thread_id`   | TEXT             | `/start` 時に作成したスレッドの ID。                                           |
 | `status`              | TEXT             | `active` / `stopped` / `paused`。                                              |
@@ -52,8 +53,6 @@
 | `next_prompt_due`     | INTEGER          | 次の進捗確認送信予定時刻。`stopped` 状態では null。                            |
 | `last_prompt_sent_at` | INTEGER          | 直近の進捗確認送信時刻。                                                       |
 | `last_user_reply_at`  | INTEGER          | 直近のユーザー進捗報告時刻。                                                   |
-
-> 単一ユーザー想定のため `user_id` 列は省略。将来複数ユーザー化する際は追加で拡張可能。
 
 ### `messages`
 
