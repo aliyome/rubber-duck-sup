@@ -21,7 +21,8 @@
   - [test/fixtures/index.ts](../../test/fixtures/index.ts)
 - [x] Discord からの Webhook リクエストの署名を検証するロジックの単体テストを、正常系（有効な署名）と異常系（無効な署名）の観点で実装する
   - [test/verify-discord-signature.spec.ts](../../test/verify-discord-signature.spec.ts)
-- [ ] AI ツールに「wrangler と TypeScript を使い、Discord からの ping-pong リクエストに応答する Cloudflare Workers の最小限のコード例を生成してください」と依頼し、bot の疎通確認用エンドポイントを実装する
+- [x] AI ツールに「wrangler と TypeScript を使い、Discord からの ping-pong リクエストに応答する Cloudflare Workers の最小限のコード例を生成してください」と依頼し、bot の疎通確認用エンドポイントを実装する
+  - `src/hono.ts` に PING→PONG 応答処理を追加し、Discord Dashboard で疎通確認済み
 - [ ] AI ツールに「Cloudflare Workers の Cron Triggers を使い、20 分ごとに処理を実行するための wrangler.toml の設定と、対応する TypeScript のコードを生成してください」と依頼し、定期実行の雛形を作成する
 - [ ] ユーザー ID をキーとして、会話の履歴を Cloudflare KV（または D1）に保存する関数を実装する
 - [ ] ユーザー ID をキーとして、保存された会話の履歴を Cloudflare KV（または D1）から取得する関数を実装する
