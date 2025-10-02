@@ -32,9 +32,15 @@
 - [x] ユーザー ID をキーとして、保存された会話の履歴を Cloudflare KV（または D1）から取得する関数を実装する
   - `src/data/conversationRepository.ts` に `getConversationHistoryForUser` を追加
 - [x] AI ツールに「以前の会話履歴のテキストをコンテキストとして渡し、『{前回の作業内容}という状態でしたが、現在の進捗はどうですか？』のような自然な問いかけ文を生成する Cloudflare Workers AI への API リクエストのコード例を生成してください」と依頼し、進捗確認メッセージを動的に生成する機能を実装する
-- [ ] Cron Triggers によって起動され、対象ユーザーの会話履歴を取得し、動的に生成した進捗確認メッセージを Discord に送信する機能を実装する
-- [ ] ユーザーからの進捗報告メッセージを受け取り、その内容を会話履歴として保存する機能を実装する
-- [ ] AI ツールに「ユーザーからの進捗報告テキストを受け取り、それを要約してポジティブなフィードバックを返すよう Cloudflare Workers AI に依頼する TypeScript のコード例を生成してください」と依頼し、AI による要約とアドバイス生成機能を実装する
-- [ ] AI が生成した要約とアドバイスを、ユーザーへの返信として Discord に送信する機能を実装する
+- [x] Cron Triggers によって起動され、対象ユーザーの会話履歴を取得し、動的に生成した進捗確認メッセージを Discord に送信する機能を実装する
+  - `src/jobs/promptScheduler.ts` が `src/lib/ai/progressPrompt.ts` と `src/lib/discord/api.ts` を利用してスレッドへ投稿
+  - `test/promptScheduler.spec.ts` でスケジューラの動作を確認
+- [x] ユーザーからの進捗報告メッセージを受け取り、その内容を会話履歴として保存する機能を実装する
+  - `/interactions` の `progress` コマンドを `src/lib/discord/interactions/progress.ts` で処理し、D1 に保存
+  - `test/progressInteraction.spec.ts` で保存処理とスケジュール更新を検証
+- [x] AI ツールに「ユーザーからの進捗報告テキストを受け取り、それを要約してポジティブなフィードバックを返すよう Cloudflare Workers AI に依頼する TypeScript のコード例を生成してください」と依頼し、AI による要約とアドバイス生成機能を実装する
+  - `src/lib/ai/progressFeedback.ts` にフィードバック生成ロジックを追加
+- [x] AI が生成した要約とアドバイスを、ユーザーへの返信として Discord に送信する機能を実装する
+  - `src/lib/discord/api.ts` 経由で Discord スレッドへ投稿し、結果を `messages` テーブルへ保存
 - [ ] `wrangler deploy`コマンドで作成した bot を Cloudflare Workers にデプロイし、実際に Discord サーバー上で 20 分ごとに通知が来ること、返信が保存・要約されることを確認する
 - [ ] プロジェクトのセットアップ方法、必要な環境変数、デプロイ手順をまとめた README.md を作成する

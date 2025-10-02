@@ -65,3 +65,49 @@ export async function getDueSessions(
 		return { ...session, next_prompt_due: session.next_prompt_due } satisfies PromptDueSession;
 	});
 }
+
+export async function getSessionById(
+	db: D1Database,
+	sessionId: string,
+): Promise<SessionRow | null> {
+	const statement = db.prepare(`SELECT ${SESSION_COLUMNS} FROM sessions WHERE id = ? LIMIT 1`);
+	const result = await statement.bind(sessionId).first<Record<string, unknown>>();
+	return result ? mapSession(result) : null;
+}
+
+interface UpdateResult {
+	success: boolean;
+	meta?: {
+		changes?: number;
+	};
+}
+
+function ensureUpdate(result: UpdateResult, context: string, sessionId: string): void {
+	if (!result.success || (result.meta?.changes ?? 0) === 0) {
+		throw new Error(`Failed to update session ${sessionId} during ${context}`);
+	}
+}
+
+export async function updateSessionAfterPrompt(
+	db: D1Database,
+	sessionId: string,
+	{ lastPromptSentAt, nextPromptDue }: { lastPromptSentAt: number; nextPromptDue: number },
+): Promise<void> {
+	const statement = db.prepare(
+		`UPDATE sessions SET last_prompt_sent_at = ?, next_prompt_due = ? WHERE id = ?`,
+	);
+	const result = await statement.bind(lastPromptSentAt, nextPromptDue, sessionId).run();
+	ensureUpdate(result, "updateSessionAfterPrompt", sessionId);
+}
+
+export async function updateSessionAfterUserReply(
+	db: D1Database,
+	sessionId: string,
+	{ lastUserReplyAt, nextPromptDue }: { lastUserReplyAt: number; nextPromptDue: number | null },
+): Promise<void> {
+	const statement = db.prepare(
+		`UPDATE sessions SET last_user_reply_at = ?, next_prompt_due = ? WHERE id = ?`,
+	);
+	const result = await statement.bind(lastUserReplyAt, nextPromptDue, sessionId).run();
+	ensureUpdate(result, "updateSessionAfterUserReply", sessionId);
+}

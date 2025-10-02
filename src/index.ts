@@ -21,6 +21,7 @@ export default {
 				db: env.DB,
 				discordToken: env.DISCORD_TOKEN,
 				discordApplicationId: env.DISCORD_APPLICATION_ID,
+				ai: env.AI,
 				scheduled: new Date(event.scheduledTime),
 			}),
 		);
