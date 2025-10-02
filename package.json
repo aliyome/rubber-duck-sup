@@ -8,7 +8,7 @@
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
-		"lint": "biome check --unsafe --write && tsc --noEmit",
+		"lint": "biome check --unsafe --write && tsgo --noEmit",
 		"prepare": "lefthook install"
 	},
 	"devDependencies": {
