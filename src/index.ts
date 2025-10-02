@@ -11,7 +11,18 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 import { app } from "./hono";
+import { processPromptSchedulerTick } from "./jobs/promptScheduler";
 
 export default {
 	fetch: app.fetch,
+	scheduled(event, env, ctx) {
+		ctx.waitUntil(
+			processPromptSchedulerTick({
+				db: env.DB,
+				discordToken: env.DISCORD_TOKEN,
+				discordApplicationId: env.DISCORD_APPLICATION_ID,
+				scheduled: new Date(event.scheduledTime),
+			}),
+		);
+	},
 } satisfies ExportedHandler<Env>;
