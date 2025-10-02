@@ -2,12 +2,11 @@ import { insertMessage, listMessagesForSession } from "../../../data/messageRepo
 import type { MessageRow, SessionRow } from "../../../data/models";
 import { updateSessionAfterUserReply } from "../../../data/sessionRepository";
 import { generateProgressFeedback } from "../../ai/progressFeedback";
-import type { WorkersAiBinding } from "../../ai/progressPrompt";
 import { createDiscordMessage } from "../api";
 
 export interface ProgressCommandContext {
 	db: D1Database;
-	ai: WorkersAiBinding;
+	ai: Ai;
 	discordToken: string;
 	session: SessionRow;
 	progressText: string;

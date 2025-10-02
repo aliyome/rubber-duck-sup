@@ -1,12 +1,12 @@
 import type { MessageRow } from "../../data/models";
-import type { WorkersAiBinding, WorkersAiTextGenerationResult } from "./progressPrompt";
+import type { WorkersAiTextGenerationResult } from "./progressPrompt";
 
-const FEEDBACK_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const FEEDBACK_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const MAX_HISTORY_MESSAGES = 8;
 const MAX_MESSAGE_LENGTH = 280;
 
 export interface GenerateProgressFeedbackInput {
-	ai: WorkersAiBinding;
+	ai: Ai;
 	history: MessageRow[];
 	now: Date;
 	userUpdate: string;

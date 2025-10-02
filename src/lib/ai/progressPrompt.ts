@@ -1,6 +1,6 @@
 import type { MessageRow } from "../../data/models";
 
-const DEFAULT_MODEL = "@cf/meta/llama-3.1-8b-instruct";
+const DEFAULT_MODEL = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const MAX_HISTORY_MESSAGES = 10;
 const MAX_MESSAGE_LENGTH = 320;
 
@@ -14,18 +14,11 @@ export interface WorkersAiTextGenerationResult {
 	[key: string]: unknown;
 }
 
-export interface WorkersAiBinding {
-	run<
-		ModelInput extends Record<string, unknown>,
-		ModelResult extends WorkersAiTextGenerationResult,
-	>(model: string, input: ModelInput): Promise<ModelResult>;
-}
-
 export interface GenerateProgressPromptInput {
-	ai: WorkersAiBinding;
+	ai: Ai;
 	history: MessageRow[];
 	now: Date;
-	model?: string;
+	model?: keyof AiModels;
 	cadenceMinutes?: number;
 }
 
@@ -112,7 +105,7 @@ export async function generateProgressPrompt({
 	`);
 
 	try {
-		const result = await ai.run(model, {
+		const rawresult = await ai.run(model, {
 			messages: [
 				{ role: "system", content: systemInstruction },
 				{ role: "user", content: userPrompt },
@@ -121,6 +114,9 @@ export async function generateProgressPrompt({
 			top_p: 0.9,
 			max_tokens: 180,
 		});
+
+		// we use `as` here for now
+		const result = rawresult as BaseAiTextGeneration["postProcessedOutputs"];
 
 		const prompt = trimWhitespace(result.response ?? "");
 		if (prompt.length > 0) {

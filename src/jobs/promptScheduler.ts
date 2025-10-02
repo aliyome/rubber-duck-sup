@@ -1,7 +1,6 @@
 import { insertMessage, listMessagesForSession } from "../data/messageRepository";
 import type { MessageRow, PromptDueSession } from "../data/models";
 import { getDueSessions, updateSessionAfterPrompt } from "../data/sessionRepository";
-import type { WorkersAiBinding } from "../lib/ai/progressPrompt";
 import { generateProgressPrompt } from "../lib/ai/progressPrompt";
 import { createDiscordMessage } from "../lib/discord/api";
 
@@ -10,7 +9,7 @@ interface PromptSchedulerContext {
 	discordToken: string;
 	discordApplicationId: string;
 	scheduled: Date;
-	ai: WorkersAiBinding;
+	ai: Ai;
 }
 
 /**
@@ -59,7 +58,7 @@ interface DueSessionContext {
 	discordToken: string;
 	session: PromptDueSession;
 	scheduled: Date;
-	ai: WorkersAiBinding;
+	ai: Ai;
 }
 
 function safeTimestamp(value: string | undefined, fallback: number): number {

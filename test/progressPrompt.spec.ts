@@ -43,7 +43,7 @@ describe("generateProgressPrompt", () => {
 		expect(run).toHaveBeenCalledTimes(1);
 
 		const [model, payload] = run.mock.calls[0];
-		expect(model).toBe("@cf/meta/llama-3.1-8b-instruct");
+		expect(model).toBe("@cf/meta/llama-3.1-8b-instruct-fp8");
 		expect(payload).toMatchObject({
 			temperature: 0.4,
 			top_p: 0.9,
