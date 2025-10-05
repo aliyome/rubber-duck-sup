@@ -44,5 +44,11 @@
   - `src/lib/discord/api.ts` 経由で Discord スレッドへ投稿し、結果を `messages` テーブルへ保存
 - [x] Discord スラッシュコマンド登録用のスクリプトを実装し、開発用ギルドに対してコマンドをデプロイする
   - [discord_slash_command_registration.md](research/discord_slash_command_registration.md)
+- [ ] `/start` スラッシュコマンドを実装し、セッション開始フローを処理する
+  - `docs/research/processing_flow_and_data_model.md` の設計どおりに、既存 active セッションの停止、新規セッションレコードの作成、Discord スレッド生成、初回メッセージ送信、slash 応答までを行う
+- [ ] `/stop` スラッシュコマンドを実装し、アクティブセッションを終了する
+  - `status`／`ended_at`／`next_prompt_due` の更新と終了メッセージ送信を行い、エラー時の応答も整理する
+- [ ] セッション開始・終了フローの単体／統合テストを追加する
+  - `/start` `/stop` の正常系と代表的な異常系（セッション無し、スレッド作成失敗など）をカバーする
 - [ ] `wrangler deploy`コマンドで作成した bot を Cloudflare Workers にデプロイし、実際に Discord サーバー上で 20 分ごとに通知が来ること、返信が保存・要約されることを確認する
 - [ ] プロジェクトのセットアップ方法、必要な環境変数、デプロイ手順をまとめた README.md を作成する
