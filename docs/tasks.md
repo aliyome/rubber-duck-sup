@@ -42,7 +42,7 @@
   - `src/lib/ai/progressFeedback.ts` にフィードバック生成ロジックを追加
 - [x] AI が生成した要約とアドバイスを、ユーザーへの返信として Discord に送信する機能を実装する
   - `src/lib/discord/api.ts` 経由で Discord スレッドへ投稿し、結果を `messages` テーブルへ保存
-- [ ] Discord スラッシュコマンド登録用のスクリプトを実装し、開発用ギルドに対してコマンドをデプロイする
+- [x] Discord スラッシュコマンド登録用のスクリプトを実装し、開発用ギルドに対してコマンドをデプロイする
   - [discord_slash_command_registration.md](research/discord_slash_command_registration.md)
 - [ ] `wrangler deploy`コマンドで作成した bot を Cloudflare Workers にデプロイし、実際に Discord サーバー上で 20 分ごとに通知が来ること、返信が保存・要約されることを確認する
 - [ ] プロジェクトのセットアップ方法、必要な環境変数、デプロイ手順をまとめた README.md を作成する
