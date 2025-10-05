@@ -1,5 +1,8 @@
 import type { PromptDueSession, SessionRow } from "./models";
 
+const ACTIVE_STATUS: SessionRow["status"] = "active";
+const STOPPED_STATUS: SessionRow["status"] = "stopped";
+
 const SESSION_COLUMNS = [
 	"id",
 	"discord_user_id",
@@ -34,7 +37,7 @@ export async function getActiveSession(db: D1Database): Promise<SessionRow | nul
 	const statement = db.prepare(
 		`SELECT ${SESSION_COLUMNS} FROM sessions WHERE status = ? ORDER BY started_at DESC LIMIT 1`,
 	);
-	const result = await statement.bind("active").first<Record<string, unknown>>();
+	const result = await statement.bind(ACTIVE_STATUS).first<Record<string, unknown>>();
 	return result ? mapSession(result) : null;
 }
 
@@ -45,7 +48,9 @@ export async function getActiveSessionByDiscordUserId(
 	const statement = db.prepare(
 		`SELECT ${SESSION_COLUMNS} FROM sessions WHERE status = ? AND discord_user_id = ? ORDER BY started_at DESC LIMIT 1`,
 	);
-	const result = await statement.bind("active", discordUserId).first<Record<string, unknown>>();
+	const result = await statement
+		.bind(ACTIVE_STATUS, discordUserId)
+		.first<Record<string, unknown>>();
 	return result ? mapSession(result) : null;
 }
 
@@ -56,7 +61,7 @@ export async function getDueSessions(
 	const statement = db.prepare(
 		`SELECT ${SESSION_COLUMNS} FROM sessions WHERE status = ? AND next_prompt_due IS NOT NULL AND next_prompt_due <= ? ORDER BY next_prompt_due ASC`,
 	);
-	const result = await statement.bind("active", referenceTime).all<Record<string, unknown>>();
+	const result = await statement.bind(ACTIVE_STATUS, referenceTime).all<Record<string, unknown>>();
 	return result.results.map((row) => {
 		const session = mapSession(row);
 		if (session.next_prompt_due === null) {
@@ -110,4 +115,110 @@ export async function updateSessionAfterUserReply(
 	);
 	const result = await statement.bind(lastUserReplyAt, nextPromptDue, sessionId).run();
 	ensureUpdate(result, "updateSessionAfterUserReply", sessionId);
+}
+
+export interface CreateSessionInput {
+	id: string;
+	discordUserId: string;
+	discordChannelId: string;
+	cadenceMinutes: number;
+	startedAt: number;
+	nextPromptDue: number | null;
+	discordThreadId?: string | null;
+	endedAt?: number | null;
+	status?: SessionRow["status"];
+	lastPromptSentAt?: number | null;
+	lastUserReplyAt?: number | null;
+}
+
+export async function createSession(
+	db: D1Database,
+	{
+		id,
+		discordUserId,
+		discordChannelId,
+		discordThreadId,
+		cadenceMinutes,
+		startedAt,
+		nextPromptDue,
+		endedAt = null,
+		status = ACTIVE_STATUS,
+		lastPromptSentAt = null,
+		lastUserReplyAt = null,
+	}: CreateSessionInput,
+): Promise<SessionRow> {
+	const statement = db.prepare(
+		`INSERT INTO sessions (id, discord_user_id, discord_channel_id, discord_thread_id, status, started_at, ended_at, cadence_minutes, next_prompt_due, last_prompt_sent_at, last_user_reply_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	);
+	const result = await statement
+		.bind(
+			id,
+			discordUserId,
+			discordChannelId,
+			discordThreadId ?? null,
+			status,
+			startedAt,
+			endedAt,
+			cadenceMinutes,
+			nextPromptDue,
+			lastPromptSentAt,
+			lastUserReplyAt,
+		)
+		.run();
+
+	if (!result.success) {
+		throw new Error(`Failed to create session ${id}`);
+	}
+
+	return {
+		id,
+		discord_user_id: discordUserId,
+		discord_channel_id: discordChannelId,
+		discord_thread_id: discordThreadId ?? null,
+		status,
+		started_at: startedAt,
+		ended_at: endedAt,
+		cadence_minutes: cadenceMinutes,
+		next_prompt_due: nextPromptDue,
+		last_prompt_sent_at: lastPromptSentAt,
+		last_user_reply_at: lastUserReplyAt,
+	};
+}
+
+export async function updateSessionThreadId(
+	db: D1Database,
+	sessionId: string,
+	threadId: string,
+): Promise<void> {
+	const statement = db.prepare(`UPDATE sessions SET discord_thread_id = ? WHERE id = ?`);
+	const result = await statement.bind(threadId, sessionId).run();
+	ensureUpdate(result, "updateSessionThreadId", sessionId);
+}
+
+export async function markSessionAsStopped(
+	db: D1Database,
+	sessionId: string,
+	endedAt: number,
+): Promise<boolean> {
+	const statement = db.prepare(
+		`UPDATE sessions SET status = ?, ended_at = ?, next_prompt_due = NULL WHERE id = ? AND status = ?`,
+	);
+	const result = await statement.bind(STOPPED_STATUS, endedAt, sessionId, ACTIVE_STATUS).run();
+	return (result.meta?.changes ?? 0) > 0;
+}
+
+export async function stopOtherActiveSessionsForUser(
+	db: D1Database,
+	discordUserId: string,
+	endedAt: number,
+	excludeSessionId: string,
+): Promise<number> {
+	const statement = db.prepare(
+		`UPDATE sessions SET status = ?, ended_at = ?, next_prompt_due = NULL WHERE status = ? AND discord_user_id = ? AND id != ?`,
+	);
+	const result = await statement
+		.bind(STOPPED_STATUS, endedAt, ACTIVE_STATUS, discordUserId, excludeSessionId)
+		.run();
+	return result.meta?.changes ?? 0;
 }

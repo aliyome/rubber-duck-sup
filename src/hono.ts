@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { getActiveSessionByDiscordUserId } from "./data/sessionRepository";
 import { handleProgressCommand } from "./lib/discord/interactions/progress";
+import { handleStartCommand } from "./lib/discord/interactions/start";
+import { handleStopCommand } from "./lib/discord/interactions/stop";
 import { verifyDiscordSignature } from "./lib/discord/verifySignature";
 
 const decoder = new TextDecoder();
@@ -28,7 +30,7 @@ interface DiscordMember {
 
 interface DiscordCommandOption {
 	name: string;
-	value?: string;
+	value?: string | number | boolean;
 }
 
 interface DiscordCommandData {
@@ -44,6 +46,7 @@ interface DiscordInteraction {
 	token?: string;
 	id?: string;
 	application_id?: string;
+	channel_id?: string;
 }
 
 function getCommandOption(
@@ -51,6 +54,24 @@ function getCommandOption(
 	name: string,
 ): DiscordCommandOption | undefined {
 	return options?.find((option) => option.name === name);
+}
+
+function getNumericOption(
+	options: DiscordCommandOption[] | undefined,
+	name: string,
+): number | null {
+	const option = getCommandOption(options, name);
+	if (!option) {
+		return null;
+	}
+	if (typeof option.value === "number") {
+		return option.value;
+	}
+	if (typeof option.value === "string") {
+		const parsed = Number(option.value);
+		return Number.isFinite(parsed) ? parsed : null;
+	}
+	return null;
 }
 
 function getInteractionUserId(interaction: DiscordInteraction): string | null {
@@ -90,6 +111,142 @@ app.post("/interactions", async (c) => {
 
 	if (interaction.type === InteractionType.APPLICATION_COMMAND) {
 		const commandName = interaction.data?.name?.toLowerCase();
+		if (commandName === "start") {
+			const userId = getInteractionUserId(interaction);
+			if (!userId) {
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "ユーザー情報を取得できませんでした。Discord 側の権限を確認してください。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+
+			const channelId = interaction.channel_id;
+			if (!channelId) {
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "コマンドを実行したチャンネル情報を取得できませんでした。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+
+			const cadenceOptionValue = getNumericOption(interaction.data?.options, "cadence");
+			const cadenceMinutes =
+				cadenceOptionValue && cadenceOptionValue > 0 ? Math.floor(cadenceOptionValue) : undefined;
+
+			const now = new Date();
+			try {
+				const result = await handleStartCommand({
+					db: c.env.DB,
+					discordToken: c.env.DISCORD_TOKEN,
+					discordUserId: userId,
+					baseChannelId: channelId,
+					now,
+					cadenceMinutes,
+					userDisplayName: interaction.member?.user?.username ?? interaction.user?.username,
+				});
+
+				const cadenceText = result.session.cadence_minutes.toString();
+				const closedSuffix =
+					result.endedSessionCount > 0
+						? `（以前のセッション ${result.endedSessionCount} 件は自動終了済み）`
+						: "";
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content:
+							`セッションを開始しました。リマインダー間隔は約${cadenceText}分です。新しいスレッドは <#${result.threadId}> です。${closedSuffix}`.trim(),
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			} catch (error) {
+				console.error("interaction.start.failed", {
+					error,
+					userId,
+					channelId,
+				});
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "セッションの開始に失敗しました。しばらく待ってから再度お試しください。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+		}
+
+		if (commandName === "stop") {
+			const userId = getInteractionUserId(interaction);
+			if (!userId) {
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "ユーザー情報を取得できませんでした。Discord 側の権限を確認してください。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+
+			const session = await getActiveSessionByDiscordUserId(c.env.DB, userId);
+			if (!session) {
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "現在アクティブなセッションはありません。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+
+			const now = new Date();
+			try {
+				const result = await handleStopCommand({
+					db: c.env.DB,
+					discordToken: c.env.DISCORD_TOKEN,
+					session,
+					now,
+				});
+
+				if (!result.stopped) {
+					return c.json({
+						type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+						data: {
+							content: "セッションはすでに終了しています。必要であれば /start で再開してください。",
+							flags: EPHEMERAL_FLAG,
+						},
+					});
+				}
+
+				const threadMention = session.discord_thread_id
+					? `（<#${session.discord_thread_id}>）`
+					: "";
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: `セッションを終了しました${threadMention}。必要になったら /start で再開できます。`,
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			} catch (error) {
+				console.error("interaction.stop.failed", {
+					error,
+					sessionId: session.id,
+					userId,
+				});
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "セッションの終了に失敗しました。時間をおいて再度お試しください。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+		}
+
 		if (commandName === "progress") {
 			const progressOption = getCommandOption(interaction.data?.options, "status");
 			const progressText =
