@@ -9,6 +9,7 @@ sequenceDiagram
   participant CloudflareWorker
   participant CloudflareD1 as D1
   participant CloudflareAI as AI
+  participant CloudflareScheduler as Scheduler
 
   User->>Discord: /start コマンドを実行
   Discord->>CloudflareWorker: Interaction (APPLICATION_COMMAND)
@@ -44,7 +45,6 @@ sequenceDiagram
   CloudflareWorker->>D1: bot メッセージ保存
   CloudflareWorker-->>Discord: Interaction Response (CHANNEL_MESSAGE_WITH_SOURCE)
 
-  participant CloudflareScheduler as Scheduler
   Scheduler->>CloudflareWorker: Cron Event
   CloudflareWorker->>D1: 期限切れセッション取得
   D1-->>CloudflareWorker: セッションリスト
