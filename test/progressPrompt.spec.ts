@@ -53,10 +53,11 @@ describe("generateProgressPrompt", () => {
 		const { messages } = payload as { messages: Array<{ role: string; content: string }> };
 		expect(messages).toHaveLength(2);
 		expect(messages[0].role).toBe("system");
-		expect(messages[0].content).toContain("progress check-in message");
+		expect(messages[0].content).toContain("Only output the final check-in message");
 		expect(messages[1].role).toBe("user");
 		expect(messages[1].content).toContain("Current time: 2025-10-02T00:00:00.000Z");
-		expect(messages[1].content).toContain("(oldest to newest)");
+		expect(messages[1].content).toContain("Conversation history (oldest to newest):");
+		expect(messages[1].content).toContain("Output requirements:");
 	});
 
 	it("falls back to a handcrafted message when the model response is empty", async () => {

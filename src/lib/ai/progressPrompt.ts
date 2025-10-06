@@ -82,10 +82,14 @@ export async function generateProgressPrompt({
 
 	const systemInstruction = trimWhitespace(`
 		You are a friendly project mentor who helps users stay accountable.
-		Write a concise progress check-in message in Japanese.
-		Keep the tone encouraging and professional.
-		If there is a latest user update, reference it naturally.
-		End with an open question that invites the user to share their current status.
+		Your task is to craft a concise, encouraging, and professional check-in message in Japanese to be sent to the user.
+
+		Follow these steps:
+		1. First, internally, identify the user's primary goal or challenge based on the provided conversation history.
+		2. Second, internally, summarize their recent progress.
+		3. Finally, using the goal and progress you identified, craft the check-in message.
+
+		**IMPORTANT**: Only output the final check-in message, without any of your internal analysis or preamble.
 	`);
 
 	const cadenceDescription =
@@ -94,14 +98,28 @@ export async function generateProgressPrompt({
 	const userPrompt = trimWhitespace(`
 		Current time: ${now.toISOString()}
 		Progress cadence: ${cadenceDescription}
-		Conversation summary (oldest to newest):
+		Conversation history (oldest to newest):
 	${formattedHistory}
 
 		Output requirements:
 		- Language: Japanese
-		- Length: at most 2 short sentences or 140 Japanese characters
-		- Include a brief acknowledgement of the latest user update if available
-		- Ask how things are going right now and encourage a small response
+		- Tone: Encouraging, friendly, and professional.
+		- Structure:
+			1. A brief, one-sentence summary of the user's main goal.
+			2. A brief summary of their latest progress.
+			3. An open-ended question to encourage a status update.
+		- Example:
+		\`\`\`markdown
+		## 目的\\n
+		{{goal}}\\n\\n
+
+		## 進捗\\n
+		{{progress}}\\n\\n
+
+		## 次のステップ\\n
+		{{question}}\\n\\n
+
+		\`\`\`
 	`);
 
 	try {
@@ -118,7 +136,7 @@ export async function generateProgressPrompt({
 		// we use `as` here for now
 		const result = rawresult as BaseAiTextGeneration["postProcessedOutputs"];
 
-		const prompt = trimWhitespace(result.response ?? "");
+		const prompt = (result.response ?? "").trim();
 		if (prompt.length > 0) {
 			return { prompt, usage: result.usage };
 		}
