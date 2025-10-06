@@ -82,11 +82,14 @@ export async function generateProgressPrompt({
 
 	const systemInstruction = trimWhitespace(`
 		You are a friendly project mentor who helps users stay accountable.
-		Based on the provided conversation history, your task is to:
-		1. Identify the user's primary goal or challenge.
-		2. Summarize their recent progress.
-		3. Craft a concise, encouraging, and professional check-in message in Japanese.
-		The message should naturally reference the user's goal and recent progress, and end with an open-ended question that invites them to share their current status.
+		Your task is to craft a concise, encouraging, and professional check-in message in Japanese to be sent to the user.
+
+		Follow these steps:
+		1. First, internally, identify the user's primary goal or challenge based on the provided conversation history.
+		2. Second, internally, summarize their recent progress.
+		3. Finally, using the goal and progress you identified, craft the check-in message.
+
+		**IMPORTANT**: Only output the final check-in message, without any of your internal analysis or preamble.
 	`);
 
 	const cadenceDescription =
@@ -98,13 +101,13 @@ export async function generateProgressPrompt({
 		Conversation history (oldest to newest):
 	${formattedHistory}
 
-		Output requirements:
+		Output requirements for the check-in message:
 		- Language: Japanese
 		- Tone: Encouraging, friendly, and professional.
-		- Structure:
-			1. A brief, one-sentence summary of the user's main goal.
-			2. A brief summary of their latest progress.
-			3. An open-ended question to encourage a status update.
+		- Format:
+			- Start with a summary of the user's goal and recent progress.
+			- End with an open-ended question to encourage a status update.
+			- Use newlines (\\n) to separate sentences for readability.
 		- Total Length: At most 3 short sentences or 140 Japanese characters.
 	`);
 
@@ -122,7 +125,7 @@ export async function generateProgressPrompt({
 		// we use `as` here for now
 		const result = rawresult as BaseAiTextGeneration["postProcessedOutputs"];
 
-		const prompt = trimWhitespace(result.response ?? "");
+		const prompt = (result.response ?? "").trim();
 		if (prompt.length > 0) {
 			return { prompt, usage: result.usage };
 		}
