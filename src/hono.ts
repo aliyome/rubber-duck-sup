@@ -145,7 +145,17 @@ app.post("/interactions", async (c) => {
 				});
 			}
 
-			const title = getStringOption(interaction.data?.options, "title") ?? undefined;
+			const title = getStringOption(interaction.data?.options, "title");
+			if (!title) {
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "セッションのタイトルを入力してください。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+
 			const cadenceOptionValue = getNumericOption(interaction.data?.options, "cadence");
 			const cadenceMinutes =
 				cadenceOptionValue && cadenceOptionValue > 0 ? Math.floor(cadenceOptionValue) : undefined;

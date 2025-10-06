@@ -43,7 +43,7 @@ export interface StartCommandContext {
 	discordUserId: string;
 	baseChannelId: string;
 	now: Date;
-	title?: string;
+	title: string;
 	cadenceMinutes?: number;
 	userDisplayName?: string;
 	sessionId?: string;
