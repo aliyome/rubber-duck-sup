@@ -101,14 +101,15 @@ export async function generateProgressPrompt({
 		Conversation history (oldest to newest):
 	${formattedHistory}
 
-		Output requirements for the check-in message:
+		Output requirements:
 		- Language: Japanese
 		- Tone: Encouraging, friendly, and professional.
+		- Structure:
+			1. A brief, one-sentence summary of the user's main goal.
+			2. A brief summary of their latest progress.
+			3. An open-ended question to encourage a status update.
 		- Format:
-			- Start with a summary of the user's goal and recent progress.
-			- End with an open-ended question to encourage a status update.
 			- Use newlines (\\n) to separate sentences for readability.
-		- Total Length: At most 3 short sentences or 140 Japanese characters.
 	`);
 
 	try {
