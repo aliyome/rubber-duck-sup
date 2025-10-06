@@ -15,10 +15,14 @@ function toTimestamp(date: Date): number {
 	return date.getTime();
 }
 
-function buildThreadName(userLabel: string | undefined, now: Date): string {
+function buildThreadName(
+	title: string | undefined,
+	userLabel: string | undefined,
+	now: Date,
+): string {
 	const iso = now.toISOString();
 	const compact = iso.slice(0, 16).replace(/[-T:]/g, "");
-	const prefix = userLabel ? userLabel : "session";
+	const prefix = title ?? (userLabel ? userLabel : "session");
 	return `${prefix}-progress-${compact}`.slice(0, 96);
 }
 
@@ -39,6 +43,7 @@ export interface StartCommandContext {
 	discordUserId: string;
 	baseChannelId: string;
 	now: Date;
+	title?: string;
 	cadenceMinutes?: number;
 	userDisplayName?: string;
 	sessionId?: string;
@@ -61,6 +66,7 @@ export async function handleStartCommand({
 	discordUserId,
 	baseChannelId,
 	now,
+	title,
 	cadenceMinutes = DEFAULT_CADENCE_MINUTES,
 	userDisplayName,
 	sessionId,
@@ -73,7 +79,7 @@ export async function handleStartCommand({
 
 	const startedAt = toTimestamp(now);
 	const id = sessionId ?? crypto.randomUUID();
-	const resolvedThreadName = threadName ?? buildThreadName(userDisplayName, now);
+	const resolvedThreadName = threadName ?? buildThreadName(title, userDisplayName, now);
 
 	let session: SessionRow | null = null;
 	let threadId: string | null = null;
@@ -98,6 +104,7 @@ export async function handleStartCommand({
 			discordUserId,
 			discordChannelId: baseChannelId,
 			discordThreadId: threadId,
+			title,
 			cadenceMinutes,
 			startedAt,
 			nextPromptDue,

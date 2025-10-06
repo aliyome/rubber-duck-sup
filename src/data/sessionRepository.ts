@@ -8,6 +8,7 @@ const SESSION_COLUMNS = [
 	"discord_user_id",
 	"discord_channel_id",
 	"discord_thread_id",
+	"title",
 	"status",
 	"started_at",
 	"ended_at",
@@ -23,6 +24,7 @@ function mapSession(row: Record<string, unknown>): SessionRow {
 		discord_user_id: String(row.discord_user_id),
 		discord_channel_id: String(row.discord_channel_id),
 		discord_thread_id: row.discord_thread_id === null ? null : String(row.discord_thread_id),
+		title: row.title === null ? null : String(row.title),
 		status: row.status as SessionRow["status"],
 		started_at: Number(row.started_at),
 		ended_at: row.ended_at === null ? null : Number(row.ended_at),
@@ -124,6 +126,7 @@ export interface CreateSessionInput {
 	cadenceMinutes: number;
 	startedAt: number;
 	nextPromptDue: number | null;
+	title?: string | null;
 	discordThreadId?: string | null;
 	endedAt?: number | null;
 	status?: SessionRow["status"];
@@ -138,6 +141,7 @@ export async function createSession(
 		discordUserId,
 		discordChannelId,
 		discordThreadId,
+		title,
 		cadenceMinutes,
 		startedAt,
 		nextPromptDue,
@@ -148,8 +152,8 @@ export async function createSession(
 	}: CreateSessionInput,
 ): Promise<SessionRow> {
 	const statement = db.prepare(
-		`INSERT INTO sessions (id, discord_user_id, discord_channel_id, discord_thread_id, status, started_at, ended_at, cadence_minutes, next_prompt_due, last_prompt_sent_at, last_user_reply_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		`INSERT INTO sessions (id, discord_user_id, discord_channel_id, discord_thread_id, title, status, started_at, ended_at, cadence_minutes, next_prompt_due, last_prompt_sent_at, last_user_reply_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 	);
 	const result = await statement
 		.bind(
@@ -157,6 +161,7 @@ export async function createSession(
 			discordUserId,
 			discordChannelId,
 			discordThreadId ?? null,
+			title ?? null,
 			status,
 			startedAt,
 			endedAt,
@@ -176,6 +181,7 @@ export async function createSession(
 		discord_user_id: discordUserId,
 		discord_channel_id: discordChannelId,
 		discord_thread_id: discordThreadId ?? null,
+		title: title ?? null,
 		status,
 		started_at: startedAt,
 		ended_at: endedAt,

@@ -3,6 +3,7 @@ CREATE TABLE `sessions` (
 	discord_user_id TEXT NOT NULL,
 	discord_channel_id TEXT NOT NULL,
 	discord_thread_id TEXT,
+	title TEXT,
 	`status` TEXT NOT NULL DEFAULT 'active',
 	started_at INTEGER NOT NULL,
 	ended_at INTEGER,
