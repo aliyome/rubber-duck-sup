@@ -11,20 +11,21 @@
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
 		"lint": "biome check --unsafe --write && tsgo --noEmit",
-		"prepare": "lefthook install"
+		"prepare": "lefthook install",
+		"update": "npx npm-check-updates -u"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.4",
-		"@cloudflare/vitest-pool-workers": "^0.8.19",
-		"@typescript/native-preview": "^7.0.0-dev.20250926.1",
+		"@biomejs/biome": "^2.2.5",
+		"@cloudflare/vitest-pool-workers": "^0.9.10",
+		"@typescript/native-preview": "^7.0.0-dev.20251005.1",
 		"discord.js": "^14.22.1",
-		"lefthook": "^1.13.4",
-		"typescript": "^5.5.2",
-		"vitest": "~3.2.0",
-		"wrangler": "^4.40.3"
+		"lefthook": "^1.13.6",
+		"typescript": "^5.9.3",
+		"vitest": "~3.2.4",
+		"wrangler": "^4.42.0"
 	},
 	"dependencies": {
 		"discord-interactions": "^4.3.0",
-		"hono": "^4.9.9"
+		"hono": "^4.9.10"
 	}
 }
