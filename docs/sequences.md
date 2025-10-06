@@ -7,9 +7,9 @@ sequenceDiagram
   participant User
   participant Discord
   participant CloudflareWorker
-  participant CloudflareD1 as D1
-  participant CloudflareAI as AI
-  participant CloudflareScheduler as Scheduler
+  participant D1 as CloudflareD1
+  participant AI as CloudflareAI
+  participant Scheduler as CloudflareScheduler
 
   User->>Discord: /start コマンドを実行
   Discord->>CloudflareWorker: Interaction (APPLICATION_COMMAND)
