@@ -107,6 +107,7 @@ describe("processPromptSchedulerTick", () => {
 			token: "bot-token",
 			channelId: "thread-99",
 			content: "<@user-1> 昨日のAI連携の進捗はどうですか？",
+			mentionEveryone: true,
 		});
 		expect(mockedInsertMessage).toHaveBeenCalledWith(db, {
 			id: "prompt-message-uuid",

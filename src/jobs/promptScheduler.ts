@@ -98,6 +98,7 @@ async function processDueSession({
 		token: discordToken,
 		channelId,
 		content,
+		mentionEveryone: true,
 	});
 
 	const createdAt = safeTimestamp(discordMessage.timestamp, scheduled.getTime());
