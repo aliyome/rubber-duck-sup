@@ -26,7 +26,16 @@ async function main(): Promise<void> {
 					.setRequired(true),
 			)
 			.toJSON(),
-		new SlashCommandBuilder().setName("start").setDescription("セッションを開始します").toJSON(),
+		new SlashCommandBuilder()
+			.setName("start")
+			.setDescription("セッションを開始します")
+			.addStringOption((option) =>
+				option.setName("title").setDescription("セッションのタイトル").setRequired(true),
+			)
+			.addIntegerOption((option) =>
+				option.setName("cadence").setDescription("リマインダーの間隔（分単位）").setRequired(false),
+			)
+			.toJSON(),
 		new SlashCommandBuilder().setName("stop").setDescription("セッションを終了します").toJSON(),
 	] satisfies RESTPostAPIApplicationCommandsJSONBody[];
 

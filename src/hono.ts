@@ -56,6 +56,17 @@ function getCommandOption(
 	return options?.find((option) => option.name === name);
 }
 
+function getStringOption(options: DiscordCommandOption[] | undefined, name: string): string | null {
+	const option = getCommandOption(options, name);
+	if (!option) {
+		return null;
+	}
+	if (typeof option.value === "string") {
+		return option.value;
+	}
+	return null;
+}
+
 function getNumericOption(
 	options: DiscordCommandOption[] | undefined,
 	name: string,
@@ -134,6 +145,17 @@ app.post("/interactions", async (c) => {
 				});
 			}
 
+			const title = getStringOption(interaction.data?.options, "title");
+			if (!title) {
+				return c.json({
+					type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+					data: {
+						content: "セッションのタイトルを入力してください。",
+						flags: EPHEMERAL_FLAG,
+					},
+				});
+			}
+
 			const cadenceOptionValue = getNumericOption(interaction.data?.options, "cadence");
 			const cadenceMinutes =
 				cadenceOptionValue && cadenceOptionValue > 0 ? Math.floor(cadenceOptionValue) : undefined;
@@ -146,6 +168,7 @@ app.post("/interactions", async (c) => {
 					discordUserId: userId,
 					baseChannelId: channelId,
 					now,
+					title,
 					cadenceMinutes,
 					userDisplayName: interaction.member?.user?.username ?? interaction.user?.username,
 				});
