@@ -14,7 +14,7 @@
     DISCORD_TOKEN=
     DISCORD_CLIENT_ID=
     DISCORD_PUBLIC_KEY=
-    ```
+    DISCORD_GUILD_ID=    ```
 
 3.  D1 データベースを作成します:
     ```sh
@@ -23,7 +23,7 @@
 
 4.  データベーススキーマを適用します:
     ```sh
-    npx wrangler d1 execute rubber-duck-sup --file=./schema.sql
+    npx wrangler d1 migrations apply DB
     ```
 
 ## 開発
