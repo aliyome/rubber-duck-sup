@@ -93,10 +93,11 @@ async function processDueSession({
 		return;
 	}
 
+	const content = `<@${session.discord_user_id}> ${prompt}`;
 	const discordMessage = await createDiscordMessage({
 		token: discordToken,
 		channelId,
-		content: prompt,
+		content,
 	});
 
 	const createdAt = safeTimestamp(discordMessage.timestamp, scheduled.getTime());
