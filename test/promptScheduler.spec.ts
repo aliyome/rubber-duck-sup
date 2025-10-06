@@ -76,8 +76,7 @@ describe("processPromptSchedulerTick", () => {
 		});
 		mockedCreateDiscordMessage.mockResolvedValue({
 			id: "discord-456",
-			channel_id: dueSession.discord_thread_id,
-			content: "昨日のAI連携の進捗はどうですか？",
+			content: "<@user-1> 昨日のAI連携の進捗はどうですか？",
 			timestamp: "2025-10-02T10:00:05.000Z",
 		});
 
@@ -107,7 +106,7 @@ describe("processPromptSchedulerTick", () => {
 		expect(mockedCreateDiscordMessage).toHaveBeenCalledWith({
 			token: "bot-token",
 			channelId: "thread-99",
-			content: "昨日のAI連携の進捗はどうですか？",
+			content: "<@user-1> 昨日のAI連携の進捗はどうですか？",
 		});
 		expect(mockedInsertMessage).toHaveBeenCalledWith(db, {
 			id: "prompt-message-uuid",
