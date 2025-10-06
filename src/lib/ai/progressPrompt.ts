@@ -82,10 +82,11 @@ export async function generateProgressPrompt({
 
 	const systemInstruction = trimWhitespace(`
 		You are a friendly project mentor who helps users stay accountable.
-		Write a concise progress check-in message in Japanese.
-		Keep the tone encouraging and professional.
-		If there is a latest user update, reference it naturally.
-		End with an open question that invites the user to share their current status.
+		Based on the provided conversation history, your task is to:
+		1. Identify the user's primary goal or challenge.
+		2. Summarize their recent progress.
+		3. Craft a concise, encouraging, and professional check-in message in Japanese.
+		The message should naturally reference the user's goal and recent progress, and end with an open-ended question that invites them to share their current status.
 	`);
 
 	const cadenceDescription =
@@ -94,14 +95,17 @@ export async function generateProgressPrompt({
 	const userPrompt = trimWhitespace(`
 		Current time: ${now.toISOString()}
 		Progress cadence: ${cadenceDescription}
-		Conversation summary (oldest to newest):
+		Conversation history (oldest to newest):
 	${formattedHistory}
 
 		Output requirements:
 		- Language: Japanese
-		- Length: at most 2 short sentences or 140 Japanese characters
-		- Include a brief acknowledgement of the latest user update if available
-		- Ask how things are going right now and encourage a small response
+		- Tone: Encouraging, friendly, and professional.
+		- Structure:
+			1. A brief, one-sentence summary of the user's main goal.
+			2. A brief summary of their latest progress.
+			3. An open-ended question to encourage a status update.
+		- Total Length: At most 3 short sentences or 140 Japanese characters.
 	`);
 
 	try {
