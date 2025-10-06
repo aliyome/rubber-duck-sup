@@ -108,8 +108,18 @@ export async function generateProgressPrompt({
 			1. A brief, one-sentence summary of the user's main goal.
 			2. A brief summary of their latest progress.
 			3. An open-ended question to encourage a status update.
-		- Format:
-			- Use newlines (\\n) to separate sentences for readability.
+		- Example:
+		\`\`\`markdown
+		## 目的\\n
+		{{goal}}\\n\\n
+
+		## 進捗\\n
+		{{progress}}\\n\\n
+
+		## 次のステップ\\n
+		{{question}}\\n\\n
+
+		\`\`\`
 	`);
 
 	try {

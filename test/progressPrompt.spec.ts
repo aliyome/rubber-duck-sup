@@ -58,9 +58,6 @@ describe("generateProgressPrompt", () => {
 		expect(messages[1].content).toContain("Current time: 2025-10-02T00:00:00.000Z");
 		expect(messages[1].content).toContain("Conversation history (oldest to newest):");
 		expect(messages[1].content).toContain("Output requirements:");
-		expect(messages[1].content).toContain(
-			"Use newlines (\\n) to separate sentences for readability.",
-		);
 	});
 
 	it("falls back to a handcrafted message when the model response is empty", async () => {
