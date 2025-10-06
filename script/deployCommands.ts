@@ -26,6 +26,8 @@ async function main(): Promise<void> {
 					.setRequired(true),
 			)
 			.toJSON(),
+		new SlashCommandBuilder().setName("start").setDescription("セッションを開始します").toJSON(),
+		new SlashCommandBuilder().setName("stop").setDescription("セッションを終了します").toJSON(),
 	] satisfies RESTPostAPIApplicationCommandsJSONBody[];
 
 	const guildId = process.env.DISCORD_GUILD_ID ?? "";
