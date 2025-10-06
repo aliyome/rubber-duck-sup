@@ -1,6 +1,6 @@
 # シーケンス図
 
-## Discord bot の処理の流れ
+## Discord bot ユーザーインタラクション
 
 ```mermaid
 sequenceDiagram
@@ -9,7 +9,6 @@ sequenceDiagram
   participant CloudflareWorker
   participant D1 as CloudflareD1
   participant AI as CloudflareAI
-  participant Scheduler as CloudflareScheduler
 
   User->>Discord: /start コマンドを実行
   Discord->>CloudflareWorker: Interaction (APPLICATION_COMMAND)
@@ -44,6 +43,17 @@ sequenceDiagram
   Discord-->>CloudflareWorker: 投稿したメッセージ
   CloudflareWorker->>D1: bot メッセージ保存
   CloudflareWorker-->>Discord: Interaction Response (CHANNEL_MESSAGE_WITH_SOURCE)
+```
+
+## スケジュールされたプロンプトジョブ
+
+```mermaid
+sequenceDiagram
+  participant Scheduler as CloudflareScheduler
+  participant CloudflareWorker
+  participant D1 as CloudflareD1
+  participant AI as CloudflareAI
+  participant Discord
 
   Scheduler->>CloudflareWorker: Cron Event
   CloudflareWorker->>D1: 期限切れセッション取得
