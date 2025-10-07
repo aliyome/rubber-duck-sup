@@ -310,8 +310,6 @@ app.post("/interactions", async (c) => {
 			c.executionCtx.waitUntil(
 				handleProgressCommand({
 					db: c.env.DB,
-					ai: c.env.AI,
-					discordToken: c.env.DISCORD_TOKEN,
 					session,
 					progressText,
 					now,
@@ -327,8 +325,7 @@ app.post("/interactions", async (c) => {
 			return c.json({
 				type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
 				data: {
-					content:
-						"進捗報告ありがとうございます！フィードバックをスレッドに投稿します。少々お待ちください。",
+					content: "進捗を記録しました。",
 					flags: EPHEMERAL_FLAG,
 				},
 			});
