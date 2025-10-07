@@ -1,6 +1,10 @@
 import { insertMessage, listMessagesForSession } from "../data/messageRepository";
 import type { MessageRow, PromptDueSession } from "../data/models";
-import { getDueSessions, updateSessionAfterPrompt } from "../data/sessionRepository";
+import {
+	getDueSessions,
+	markSessionAsStopped,
+	updateSessionAfterPrompt,
+} from "../data/sessionRepository";
 import { generateProgressPrompt } from "../lib/ai/progressPrompt";
 import { createDiscordMessage } from "../lib/discord/api";
 
@@ -77,6 +81,29 @@ async function processDueSession({
 	ai,
 }: DueSessionContext): Promise<void> {
 	const history = await listMessagesForSession(db, session.id);
+
+	// 応答がない場合はセッションを終了する
+	if (history.length >= 2) {
+		const lastTwoMessages = history.slice(-2);
+		if (lastTwoMessages.every((m) => m.author === "bot")) {
+			const channelId = session.discord_thread_id ?? session.discord_channel_id;
+			if (channelId) {
+				const content = `<@${session.discord_user_id}> 応答がないため、セッションを終了します。`;
+				await createDiscordMessage({
+					token: discordToken,
+					channelId,
+					content,
+				});
+			}
+
+			await markSessionAsStopped(db, session.id, scheduled.getTime());
+			console.info("cron.prompt.circuit_breaker", {
+				sessionId: session.id,
+			});
+			return;
+		}
+	}
+
 	const { prompt } = await generateProgressPrompt({
 		ai,
 		history,
